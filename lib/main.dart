@@ -1,10 +1,9 @@
 import "package:flutter/material.dart";
 void main(){
-  runApp(MyApp());
+  runApp(_MyApp());
 }
-class MyApp extends StatelessWidget{
-  TextEditingController result=TextEditingController()..text='0';
-  MyApp({super.key});
+class _MyApp extends StatelessWidget{
+  TextEditingController result=TextEditingController();
   @override
   Widget build(BuildContext context)
   => MaterialApp(
@@ -26,10 +25,16 @@ class MyApp extends StatelessWidget{
                   textAlign:TextAlign.right,
                   textAlignVertical:TextAlignVertical.bottom,
                   decoration:const InputDecoration(
-                    border: OutlineInputBorder(
-                      borderRadius:BorderRadius.all(Radius.circular(15),
-                      ),
+                    hintText:"0",
+                    hintStyle: TextStyle(color:Colors.grey),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius:BorderRadius.all(Radius.circular(15)),
+                      borderSide: BorderSide(color: Colors.amber,width:2)
                     ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius:BorderRadius.all(Radius.circular(15)),
+                      borderSide: BorderSide(color: Colors.amber,width:2)
+                    )
                   )
                 ),
               ),
@@ -45,7 +50,8 @@ class MyApp extends StatelessWidget{
                           onPressed:()=>result.text=result.text.isNotEmpty?result.text.substring(0,result.text.length-1):'',
                           onLongPress:()=>result.text='',
                           style:ElevatedButton.styleFrom(
-                            backgroundColor:Colors.red.withOpacity(0),
+                            backgroundColor:Colors.black,
+                            shadowColor:Colors.white,
                             side:const BorderSide(color:Colors.red,width:2)
                           ),
                           child:const Icon(Icons.backspace_outlined,color:Colors.red),
@@ -126,19 +132,7 @@ class MyApp extends StatelessWidget{
                         ]
                       ),
                     ),
-                    Expanded(
-                      child:Padding(
-                        padding:const EdgeInsets.all(3),
-                        child: ElevatedButton(
-                          onPressed:eval,
-                          style:ElevatedButton.styleFrom(
-                            side:const BorderSide(color:Colors.green,width:2),
-                            backgroundColor: Colors.black.withOpacity(0),
-                          ),
-                          child:const Text("=",style:TextStyle(fontSize:30,color:Colors.green))
-                        )
-                      )
-                    )
+                    buildButtonItem('=',Colors.green)
                   ]
                 )
               )
@@ -148,20 +142,21 @@ class MyApp extends StatelessWidget{
       ),
     )
   );
-  Expanded buildButtonItem(String text)
+  Expanded buildButtonItem([String text='',Color color=Colors.blue])
   => Expanded(
     child: Padding(
       padding: const EdgeInsets.all(3.0),
       child: ElevatedButton(
         style:ElevatedButton.styleFrom(
-          side:const BorderSide(width:2,color:Colors.blue),
-          backgroundColor: Colors.blue.withOpacity(0)
+          side:BorderSide(width:2,color:color),
+          backgroundColor: Colors.black,
+          shadowColor: Colors.white,
         ),
         child:Text(
           text,
-          style:const TextStyle(fontSize:30,color:Colors.blue)
+          style:TextStyle(fontSize:30,color:color)
         ),
-        onPressed:()=>result.text=result.text+text
+        onPressed:()=>text!='='?result.text=result.text+text:eval()
       ),
     ),
   );
@@ -188,7 +183,7 @@ class MyApp extends StatelessWidget{
           final List<String> y = x.split('+');
           result.text=result.text.replaceFirst(x,(double.parse(y[0])+double.parse(y[1])).toString());
         }else if(x.contains('-')){
-          final List<String> y = x.split('-');
+          final List<String> y = x.split(RegExp('(?<=.)-'));
           result.text=result.text.replaceFirst(x,(double.parse(y[0])-double.parse(y[1])).toString());
         }
       }
